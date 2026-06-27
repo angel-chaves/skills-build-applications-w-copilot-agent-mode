@@ -12,6 +12,37 @@ const baseUrl = codespaceName
 
 app.use(express.json())
 
+app.get('/api/users/', async (_request, response) => {
+  const users = await User.find().sort({ username: 1 })
+  response.json(users)
+})
+
+app.get('/api/teams/', async (_request, response) => {
+  const teams = await Team.find().sort({ name: 1 })
+  response.json(teams)
+})
+
+app.get('/api/activities/', async (_request, response) => {
+  const activities = await Activity.find()
+    .populate('userId')
+    .populate('workoutId')
+    .sort({ completedAt: -1 })
+  response.json(activities)
+})
+
+app.get('/api/leaderboard/', async (_request, response) => {
+  const leaderboard = await LeaderboardEntry.find()
+    .populate('userId')
+    .populate('teamId')
+    .sort({ rank: 1, score: -1 })
+  response.json(leaderboard)
+})
+
+app.get('/api/workouts/', async (_request, response) => {
+  const workouts = await Workout.find().sort({ category: 1, title: 1 })
+  response.json(workouts)
+})
+
 app.get('/api/health', async (_request, response) => {
   const [userCount, teamCount, activityCount, leaderboardCount, workoutCount] =
     await Promise.all([
